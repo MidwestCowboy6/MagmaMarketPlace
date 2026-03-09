@@ -1,0 +1,22 @@
+{
+  "name": "Magma Marketplace",
+  "short_name": "Magma Market",
+  "description": "Trade NFT collectibles securely on Avalanche",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#f97316",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

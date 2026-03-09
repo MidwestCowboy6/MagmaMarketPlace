@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Better Auth required models ───────────────────────────────────────────
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  // App-specific profile fields
+  username      String?   @unique
+  displayName   String?
+  avatarUrl     String?
+  walletAddress String?
+  bio           String?
+  totalSales    Int       @default(0)
+  totalPurchases Int      @default(0)
+  totalTrades   Int       @default(0)
+  reputation    Int       @default(100)
+
+  // Relations
+  listings      Listing[]
+  sentMessages  Message[]       @relation("SentMessages")
+  conversations ConversationParticipant[]
+  ratingsGiven  Rating[]        @relation("RatingsGiven")
+  ratingsReceived Rating[]      @relation("RatingsReceived")
+  shop          Shop?
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ─── App models ─────────────────────────────────────────────────────────────
+
+model Listing {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  price         Float
+  imageUrl      String?
+  category      String   @default("other")
+  itemType      String   @default("physical")
+  listingType   String   @default("fixed")
+  status        String   @default("active")
+  sellerId      String
+  seller        User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Rating {
+  id            String   @id @default(cuid())
+  raterId       String
+  rater         User     @relation("RatingsGiven", fields: [raterId], references: [id], onDelete: Cascade)
+  rateeId       String
+  ratee         User     @relation("RatingsReceived", fields: [rateeId], references: [id], onDelete: Cascade)
+  score         Float
+  comment       String?
+  response      String?
+  listingId     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Conversation {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  unreadCount    Int          @default(0)
+  lastReadAt     DateTime?
+
+  @@unique([conversationId, userId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  text           String
+  createdAt      DateTime     @default(now())
+}
+
+model Shop {
+  id            String   @id @default(cuid())
+  ownerId       String   @unique
+  owner         User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  bannerUrl     String?
+  logoUrl       String?
+  category      String   @default("general")
+  isActive      Boolean  @default(true)
+  followerCount Int      @default(0)
+  totalSales    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
