@@ -1,4 +1,9 @@
 [build]
-  base = "mobile"
   command = "npx expo export --platform web"
-  publish = "mobile/dist"
+  publish = "dist"
+  base = "mobile"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
