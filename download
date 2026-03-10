@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment files - NEVER commit these
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+prisma/dev.db
+prisma/prisma/dev.db
+
+# Build outputs
+dist/
+out/
+build/
+web-build/
+.expo/
+
+# Logs
+*.log
+logs/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+expo.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# TypeScript
+*.tsbuildinfo
+
+# Expo/React Native
+expo-env.d.ts
+.kotlin/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+/ios
+/android
+.metro-health-check*
+
+# Cache
+.cache/
+.eslintcache
+coverage/
+
+# Vibecode specific
+.claude/skills/
